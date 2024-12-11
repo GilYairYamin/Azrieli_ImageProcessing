@@ -8,13 +8,14 @@ def display_image(img):
     cv2.destroyAllWindows()
 
 
-original_img = cv2.imread("output.png", 0)
+original_img = cv2.imread("baffalo.png", 0)
 
 i = 7
 a = cv2.bilateralFilter(original_img, i, i * 2, i / 2)
 # display_image(a)
-_, b = cv2.threshold(a, 128, 255, cv2.THRESH_BINARY)
-print(b)
+
+_, b = cv2.threshold(a, 128, 255, cv2.THRESH_BINARY_INV)
+display_image(b)
 
 results = []
 dirs = [([-1, 1], [-1, 1]), ([-1, 1], [1, -1]), ([1, -1], [-1, 1]), ([1, -1], [1, -1])]
