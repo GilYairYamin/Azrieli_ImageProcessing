@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 
 def display_image(img):
@@ -9,28 +8,33 @@ def display_image(img):
     cv2.destroyAllWindows()
 
 
-original_img = cv2.imread("rice-shaded.tif", 0)
-# display_image(original_img)
+original_img = cv2.imread("output.png", 0)
 
-# equ = cv2.equalizeHist(original_img)
-# display_image(equ)
+i = 7
+a = cv2.bilateralFilter(original_img, i, i * 2, i / 2)
+# display_image(a)
+_, b = cv2.threshold(a, 128, 255, cv2.THRESH_BINARY)
+print(b)
+
+results = []
+dirs = [([-1, 1], [-1, 1]), ([-1, 1], [1, -1]), ([1, -1], [-1, 1]), ([1, -1], [1, -1])]
 
 
+for dir in dirs:
+    x1 = np.array(dir[0])
+    x2 = np.array(dir[1]).reshape(1, len(dir[1]))
+    res = cv2.filter2D(cv2.filter2D(b, -1, x1), -1, x2)
+    results.append(res)
 
-# display_image(test1)
+
+color_image = cv2.cvtColor(
+    original_img,
+    cv2.COLOR_BGR2RGB,
+)
+
+for res in results:
+    color_image[res == 255] = [0, 0, 255]
+
+display_image(color_image)
 
 
-clahe = cv2.createCLAHE(0.3, (8, 8))
-cl1 = clahe.apply(original_img)
-display_image(cl1)
-
-# test = cv2.adaptiveThreshold(
-#     cl1, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 201, 1
-# )
-
-test = cv2.threshold(cl1, 128, 255, cv2.THRESH_BINARY)
-display_image(test[1])
-
-kernal = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (13, 13))
-test1 = cv2.morphologyEx(test[1], cv2.MORPH_OPEN, kernal)
-display_image(test1)
